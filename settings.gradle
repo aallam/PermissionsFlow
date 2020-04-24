@@ -1,1 +1,2 @@
-include 'FlowPermissions'
+include 'PermissionsFlow'
+include ':sample'
