@@ -11,8 +11,14 @@ import com.aallam.permissionsflow.helper.FragmentController
 import com.aallam.permissionsflow.internal.PERMISSIONS_REQUEST_CODE
 import com.aallam.permissionsflow.internal.PermissionsDataFlow
 import com.aallam.permissionsflow.internal.ShadowFragment
-import com.aallam.permissionsflow.internal.reactive.BehaviorSubject
 import io.mockk.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.launch
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -24,6 +30,7 @@ import kotlin.test.assertTrue
 
 @RunWith(AndroidJUnit4::class)
 @Config(sdk = [Build.VERSION_CODES.M])
+@OptIn(ExperimentalCoroutinesApi::class)
 class PermissionsFlowTest {
 
     @get:Rule
@@ -46,10 +53,10 @@ class PermissionsFlowTest {
         every { permissionsFlow.isGranted(permission) } returns true
 
         permissionsFlow.request(permission)
-            .test()
-            .assertNoErrors()
-            .assertSize(1)
-            .assertValues(true)
+                .test()
+                .assertNoErrors()
+                .assertSize(1)
+                .assertValues(true)
     }
 
     @Test
@@ -60,9 +67,9 @@ class PermissionsFlowTest {
         simulateRequest(permission to PERMISSION_GRANTED)
 
         permissionsFlow.request(permission)
-            .test()
-            .assertNoErrors()
-            .assertValues(true)
+                .test()
+                .assertNoErrors()
+                .assertValues(true)
     }
 
     @Test
@@ -73,9 +80,9 @@ class PermissionsFlowTest {
         simulateRequest(permission to PERMISSION_GRANTED)
 
         permissionsFlow.requestEach(permission)
-            .test()
-            .assertNoErrors()
-            .assertValues(Permission(permission, true))
+                .test()
+                .assertNoErrors()
+                .assertValues(Permission(permission, true))
     }
 
     @Test
@@ -86,9 +93,9 @@ class PermissionsFlowTest {
         simulateRequest(permission to PERMISSION_GRANTED)
 
         permissionsFlow.requestEachCombined(permission)
-            .test()
-            .assertNoErrors()
-            .assertValues(Permission(permission, true))
+                .test()
+                .assertNoErrors()
+                .assertValues(Permission(permission, true))
     }
 
     @Test
@@ -98,9 +105,9 @@ class PermissionsFlowTest {
         every { permissionsFlow.isGranted(permission) } returns true
 
         permissionsFlow.requestEach(permission)
-            .test()
-            .assertNoErrors()
-            .assertValues(Permission(permission, true))
+                .test()
+                .assertNoErrors()
+                .assertValues(Permission(permission, true))
     }
 
     @Test
@@ -110,9 +117,9 @@ class PermissionsFlowTest {
         every { permissionsFlow.isGranted(permission) } returns true
 
         permissionsFlow.requestEachCombined(permission)
-            .test()
-            .assertNoErrors()
-            .assertValues(Permission(permission, true))
+                .test()
+                .assertNoErrors()
+                .assertValues(Permission(permission, true))
     }
 
     @Test
@@ -122,9 +129,9 @@ class PermissionsFlowTest {
         every { permissionsFlow.isGranted(permission) } returns true
 
         permissionsFlow.request(permission)
-            .test()
-            .assertNoErrors()
-            .assertValues(true)
+                .test()
+                .assertNoErrors()
+                .assertValues(true)
     }
 
     @Test
@@ -135,9 +142,9 @@ class PermissionsFlowTest {
         simulateRequest(permission to PERMISSION_DENIED)
 
         permissionsFlow.request(permission)
-            .test()
-            .assertNoErrors()
-            .assertValues(false)
+                .test()
+                .assertNoErrors()
+                .assertValues(false)
     }
 
     @Test
@@ -148,9 +155,9 @@ class PermissionsFlowTest {
         simulateRequest(permission to PERMISSION_DENIED)
 
         permissionsFlow.requestEachCombined(permission)
-            .test()
-            .assertNoErrors()
-            .assertValues(Permission(permission, false))
+                .test()
+                .assertNoErrors()
+                .assertValues(Permission(permission, false))
     }
 
     @Test
@@ -160,9 +167,9 @@ class PermissionsFlowTest {
         every { permissionsFlow.isRevoked(permission) } returns true
 
         permissionsFlow.request(permission)
-            .test()
-            .assertNoErrors()
-            .assertValues(false)
+                .test()
+                .assertNoErrors()
+                .assertValues(false)
     }
 
     @Test
@@ -172,9 +179,9 @@ class PermissionsFlowTest {
         every { permissionsFlow.isRevoked(permission) } returns true
 
         permissionsFlow.requestEach(permission)
-            .test()
-            .assertNoErrors()
-            .assertValues(Permission(permission, false))
+                .test()
+                .assertNoErrors()
+                .assertValues(Permission(permission, false))
     }
 
     @Test
@@ -184,9 +191,9 @@ class PermissionsFlowTest {
         every { permissionsFlow.isRevoked(permission) } returns true
 
         permissionsFlow.requestEachCombined(permission)
-            .test()
-            .assertNoErrors()
-            .assertValues(Permission(permission, false))
+                .test()
+                .assertNoErrors()
+                .assertValues(Permission(permission, false))
     }
 
     @Test
@@ -197,9 +204,9 @@ class PermissionsFlowTest {
         simulateRequest(*permissions.resultTo(PERMISSION_GRANTED))
 
         permissionsFlow.request(*permissions)
-            .test()
-            .assertNoErrors()
-            .assertValues(true)
+                .test()
+                .assertNoErrors()
+                .assertValues(true)
     }
 
     @Test
@@ -210,9 +217,9 @@ class PermissionsFlowTest {
         simulateRequest(*permissions.resultTo(PERMISSION_GRANTED))
 
         permissionsFlow.requestEach(*permissions)
-            .test()
-            .assertNoErrors()
-            .assertValues(Permission(permissions[0], true), Permission(permissions[1], true))
+                .test()
+                .assertNoErrors()
+                .assertValues(Permission(permissions[0], true), Permission(permissions[1], true))
     }
 
     @Test
@@ -223,9 +230,9 @@ class PermissionsFlowTest {
         simulateRequest(*permissions.resultTo(PERMISSION_GRANTED))
 
         permissionsFlow.requestEachCombined(*permissions)
-            .test()
-            .assertNoErrors()
-            .assertValues(Permission(permissions[0] + ", " + permissions[1], true))
+                .test()
+                .assertNoErrors()
+                .assertValues(Permission(permissions[0] + ", " + permissions[1], true))
     }
 
     @Test
@@ -236,9 +243,9 @@ class PermissionsFlowTest {
         simulateRequest(permissions[0] to PERMISSION_GRANTED, permissions[1] to PERMISSION_DENIED)
 
         permissionsFlow.request(*permissions)
-            .test()
-            .assertNoErrors()
-            .assertValues(false)
+                .test()
+                .assertNoErrors()
+                .assertValues(false)
     }
 
     @Test
@@ -250,9 +257,9 @@ class PermissionsFlowTest {
         simulateRequest(permissions[0] to PERMISSION_GRANTED)
 
         permissionsFlow.request(*permissions)
-            .test()
-            .assertNoErrors()
-            .assertValues(false)
+                .test()
+                .assertNoErrors()
+                .assertValues(false)
     }
 
     @Test
@@ -264,9 +271,9 @@ class PermissionsFlowTest {
         val slotPermissions = simulateRequest(permissions[0] to PERMISSION_GRANTED)
 
         permissionsFlow.requestEach(*permissions)
-            .test()
-            .assertNoErrors()
-            .assertValues(Permission(permissions[0], true), Permission(permissions[1], true))
+                .test()
+                .assertNoErrors()
+                .assertValues(Permission(permissions[0], true), Permission(permissions[1], true))
 
         assertEquals(1, slotPermissions.captured.size)
         assertEquals(permissions[0], slotPermissions.captured[0])
@@ -281,9 +288,9 @@ class PermissionsFlowTest {
         val slotPermissions = simulateRequest(permissions[0] to PERMISSION_GRANTED)
 
         permissionsFlow.requestEachCombined(*permissions)
-            .test()
-            .assertNoErrors()
-            .assertValues(Permission(permissions[0] + ", " + permissions[1], true))
+                .test()
+                .assertNoErrors()
+                .assertValues(Permission(permissions[0] + ", " + permissions[1], true))
 
         assertEquals(1, slotPermissions.captured.size)
         assertEquals(permissions[0], slotPermissions.captured[0])
@@ -295,14 +302,14 @@ class PermissionsFlowTest {
 
         every { permissionsFlow.isGranted(any()) } returns false
         simulateRequest(
-            permissions[0] to PERMISSION_GRANTED,
-            permissions[1] to PERMISSION_DENIED
+                permissions[0] to PERMISSION_GRANTED,
+                permissions[1] to PERMISSION_DENIED
         )
 
         permissionsFlow.requestEach(*permissions)
-            .test()
-            .assertNoErrors()
-            .assertValues(Permission(permissions[0], true), Permission(permissions[1], false))
+                .test()
+                .assertNoErrors()
+                .assertValues(Permission(permissions[0], true), Permission(permissions[1], false))
     }
 
     @Test
@@ -311,14 +318,14 @@ class PermissionsFlowTest {
 
         every { permissionsFlow.isGranted(any()) } returns false
         simulateRequest(
-            permissions[0] to PERMISSION_GRANTED,
-            permissions[1] to PERMISSION_DENIED
+                permissions[0] to PERMISSION_GRANTED,
+                permissions[1] to PERMISSION_DENIED
         )
 
         permissionsFlow.requestEachCombined(*permissions)
-            .test()
-            .assertNoErrors()
-            .assertValues(Permission(permissions[0] + ", " + permissions[1], false))
+                .test()
+                .assertNoErrors()
+                .assertValues(Permission(permissions[0] + ", " + permissions[1], false))
     }
 
     @Test
@@ -330,9 +337,9 @@ class PermissionsFlowTest {
         simulateRequest(permissions[0] to PERMISSION_GRANTED)
 
         permissionsFlow.requestEach(*permissions)
-            .test()
-            .assertNoErrors()
-            .assertValues(Permission(permissions[0], true), Permission(permissions[1], false))
+                .test()
+                .assertNoErrors()
+                .assertValues(Permission(permissions[0], true), Permission(permissions[1], false))
     }
 
     @Test
@@ -344,9 +351,9 @@ class PermissionsFlowTest {
         simulateRequest(permissions[0] to PERMISSION_GRANTED)
 
         permissionsFlow.requestEachCombined(*permissions)
-            .test()
-            .assertNoErrors()
-            .assertValues(Permission(permissions[0] + ", " + permissions[1], false))
+                .test()
+                .assertNoErrors()
+                .assertValues(Permission(permissions[0] + ", " + permissions[1], false))
     }
 
     @Test
@@ -356,12 +363,12 @@ class PermissionsFlowTest {
         every { permissionsFlow.isGranted(permission) } returns false
         simulateRequest(permission to PERMISSION_GRANTED)
 
-        val subject = BehaviorSubject(1).also { it.close() }
+        val subject = MutableStateFlow(1)
         subject
-            .request(permissionsFlow, permission)
-            .test()
-            .assertNoErrors()
-            .assertValues(true)
+                .request(permissionsFlow, permission)
+                .test()
+                .assertNoErrors()
+                .assertValues(true)
     }
 
     @Test
@@ -371,14 +378,13 @@ class PermissionsFlowTest {
         every { permissionsFlow.isGranted(permission) } returns false
         simulateRequest(permission to PERMISSION_GRANTED)
 
-        val subject = BehaviorSubject(1).also { it.close() }
+        val subject = MutableStateFlow(1)
         subject
-            .requestEach(permissionsFlow, permission)
-            .test()
-            .assertNoErrors()
-            .assertValues(Permission(permission, true))
+                .requestEach(permissionsFlow, permission)
+                .test()
+                .assertNoErrors()
+                .assertValues(Permission(permission, true))
     }
-
 
     @Test
     fun eachSubscriptionCombined_trigger_granted() = coroutineRule.runBlocking {
@@ -387,12 +393,12 @@ class PermissionsFlowTest {
         every { permissionsFlow.isGranted(permission) } returns false
         simulateRequest(permission to PERMISSION_GRANTED)
 
-        val subject = BehaviorSubject(1).also { it.close() }
+        val subject = MutableStateFlow(1)
         subject
-            .requestEachCombined(permissionsFlow, permission)
-            .test()
-            .assertNoErrors()
-            .assertValues(Permission(permission, true))
+                .requestEachCombined(permissionsFlow, permission)
+                .test()
+                .assertNoErrors()
+                .assertValues(Permission(permission, true))
     }
 
     @Test
@@ -403,9 +409,9 @@ class PermissionsFlowTest {
         every { activity.shouldShowRequestPermissionRationale(any()) } returns true
 
         permissionsFlow.shouldShowRequestPermissionRationale(activity, "p1", "p2")
-            .test()
-            .assertNoErrors()
-            .assertValues(true)
+                .test()
+                .assertNoErrors()
+                .assertValues(true)
     }
 
     @Test
@@ -416,9 +422,9 @@ class PermissionsFlowTest {
         every { activity.shouldShowRequestPermissionRationale("p1") } returns true
 
         permissionsFlow.shouldShowRequestPermissionRationale(activity, "p1", "p2")
-            .test()
-            .assertNoErrors()
-            .assertValues(false)
+                .test()
+                .assertNoErrors()
+                .assertValues(false)
     }
 
     @Test
@@ -428,9 +434,9 @@ class PermissionsFlowTest {
         every { (permissionsFlow as PermissionsDataFlow).isMarshmallow() } returns true
 
         permissionsFlow.shouldShowRequestPermissionRationale(activity, "p1", "p2")
-            .test()
-            .assertNoErrors()
-            .assertValues(false)
+                .test()
+                .assertNoErrors()
+                .assertValues(false)
     }
 
     @Test
@@ -440,9 +446,9 @@ class PermissionsFlowTest {
         every { (permissionsFlow as PermissionsDataFlow).isMarshmallow() } returns true
 
         permissionsFlow.shouldShowRequestPermissionRationale(activity, "p1", "p2")
-            .test()
-            .assertNoErrors()
-            .assertValues(false)
+                .test()
+                .assertNoErrors()
+                .assertValues(false)
     }
 
     @Test
@@ -453,9 +459,9 @@ class PermissionsFlowTest {
         every { permissionsFlow.isGranted("p2") } returns true
 
         permissionsFlow.shouldShowRequestPermissionRationale(activity, "p1", "p2")
-            .test()
-            .assertNoErrors()
-            .assertValues(false)
+                .test()
+                .assertNoErrors()
+                .assertValues(false)
     }
 
     @Test
@@ -521,12 +527,14 @@ class PermissionsFlowTest {
         val permissionsKeys = permissions.keys.toTypedArray()
         val grantResults = permissions.values.toIntArray()
         val slotPermissions = slot<Array<String>>()
-        every { shadowFragment.requestPermissions(capture(slotPermissions), PERMISSIONS_REQUEST_CODE) } answers {
+        every {
+            shadowFragment.requestPermissions(capture(slotPermissions), PERMISSIONS_REQUEST_CODE)
+        } answers {
             shadowFragment.onRequestPermissionsResult(PERMISSIONS_REQUEST_CODE, permissionsKeys, grantResults)
         }
         return slotPermissions
     }
 
     private fun Array<String>.resultTo(permission: Int): Array<Pair<String, Int>> =
-        map { it to permission }.toTypedArray()
+            map { it to permission }.toTypedArray()
 }

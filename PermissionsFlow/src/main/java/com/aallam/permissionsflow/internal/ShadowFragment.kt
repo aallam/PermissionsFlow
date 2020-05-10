@@ -8,19 +8,19 @@ import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.aallam.permissionsflow.Permission
-import com.aallam.permissionsflow.internal.reactive.BehaviorSubject
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 internal const val PERMISSIONS_REQUEST_CODE = 42
 private const val TAG = "PermissionsFlowFragment"
 
-internal class ShadowFragment : Fragment(), CoroutineScope by CoroutineScope(Dispatchers.Main) {
+@OptIn(ExperimentalCoroutinesApi::class)
+internal class ShadowFragment : Fragment() {
 
     // Contains all the current permission requests.
     // Once granted or denied, they are removed from it.
-    private val subjects: MutableMap<String, BehaviorSubject<Permission>> = mutableMapOf()
+    private val subjects: MutableMap<String, MutableStateFlow<Permission?>> = mutableMapOf()
     private var logging: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,17 +50,14 @@ internal class ShadowFragment : Fragment(), CoroutineScope by CoroutineScope(Dis
         grantResults: IntArray,
         shouldShowRequestPermissionRationale: BooleanArray
     ) {
-        launch {
-            permissions.forEachIndexed { index, permission ->
-                log("onRequestPermissionsResult: $permission")
-                subjects[permission]?.let { subject ->
-                    subjects.remove(permission)
-                    subject.use {
-                        val granted = grantResults[index] == PackageManager.PERMISSION_GRANTED
-                        it.emit(Permission(permissions[index], granted, shouldShowRequestPermissionRationale[index]))
-                    }
-                } ?: Log.e(TAG, "onRequestPermissionsResult: no corresponding permission request found")
-            }
+        permissions.forEachIndexed { index, permission ->
+            log("onRequestPermissionsResult: $permission")
+            subjects[permission]?.let { subject ->
+                subjects.remove(permission)
+                val granted = grantResults[index] == PackageManager.PERMISSION_GRANTED
+                subject.value = Permission(permissions[index], granted, shouldShowRequestPermissionRationale[index])
+                //subject.close() TODO close ?
+            } ?: Log.e(TAG, "onRequestPermissionsResult: no corresponding permission request found")
         }
     }
 
@@ -74,7 +71,7 @@ internal class ShadowFragment : Fragment(), CoroutineScope by CoroutineScope(Dis
         return requireActivity().packageManager.isPermissionRevokedByPolicy(permission, requireActivity().packageName)
     }
 
-    public fun getSubjectByPermission(permission: String): BehaviorSubject<Permission>? {
+    public fun getSubjectByPermission(permission: String): MutableStateFlow<Permission?>? {
         return subjects[permission]
     }
 
@@ -84,8 +81,8 @@ internal class ShadowFragment : Fragment(), CoroutineScope by CoroutineScope(Dis
 
     public fun setSubjectForPermission(
         permission: String,
-        subject: BehaviorSubject<Permission>
-    ): BehaviorSubject<Permission>? {
+        subject: MutableStateFlow<Permission?>
+    ): StateFlow<Permission?>? {
         return subjects.put(permission, subject)
     }
 

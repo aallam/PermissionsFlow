@@ -17,6 +17,7 @@ fun <T> Flow<T>.request(activity: FragmentActivity, vararg permissions: String):
     return flatMapConcat { PermissionsFlow.of(activity).request(*permissions) }
 }
 
+@OptIn(kotlinx.coroutines.FlowPreview::class)
 fun <T> Flow<T>.request(permissionsFlow: PermissionsFlow, vararg permissions: String): Flow<Boolean> {
     return flatMapConcat { permissionsFlow.request(*permissions) }
 }
@@ -31,6 +32,7 @@ fun <T> Flow<T>.ensureEach(activity: FragmentActivity, vararg permissions: Strin
     return flatMapConcat { PermissionsFlow.of(activity).requestEach(*permissions) }
 }
 
+@OptIn(kotlinx.coroutines.FlowPreview::class)
 fun <T> Flow<T>.requestEach(permissionsFlow: PermissionsFlow, vararg permissions: String): Flow<Permission> {
     return flatMapConcat { permissionsFlow.requestEach(*permissions) }
 }
@@ -46,6 +48,7 @@ fun <T> Flow<T>.requestEachCombined(activity: FragmentActivity, vararg permissio
     return flatMapConcat { PermissionsFlow.of(activity).requestEachCombined(*permissions) }
 }
 
+@OptIn(kotlinx.coroutines.FlowPreview::class)
 fun <T> Flow<T>.requestEachCombined(permissionsFlow: PermissionsFlow, vararg permissions: String): Flow<Permission> {
     return flatMapConcat { permissionsFlow.requestEachCombined(*permissions) }
 }

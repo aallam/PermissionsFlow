@@ -8,7 +8,6 @@ import androidx.fragment.app.FragmentActivity
 import com.aallam.permissionsflow.Permission
 import com.aallam.permissionsflow.PermissionsFlow
 import com.aallam.permissionsflow.internal.extension.toFlow
-import com.aallam.permissionsflow.internal.reactive.BehaviorSubject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
@@ -19,7 +18,7 @@ private val TRIGGER = Unit
 @Suppress("unused")
 @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 internal class PermissionsDataFlow(
-    private val permissionsFlowFragment: ShadowFragment
+        private val permissionsFlowFragment: ShadowFragment
 ) : PermissionsFlow {
 
     override fun logging(logging: Boolean) {
@@ -59,16 +58,17 @@ internal class PermissionsDataFlow(
 
     private fun <T> Flow<T>.ensure(vararg permissions: String): Flow<Boolean> {
         return requestPermissions(this, *permissions)
-            .bufferList()
-            .flatMapConcat { permissionsList ->
-                if (permissions.isEmpty()) {
-                    // Occurs during orientation change, when the subject receives onComplete.
-                    // In that case we don't want to propagate that empty list.
-                    return@flatMapConcat emptyFlow<Boolean>()
+                .onEach { println("inside: $it") }
+                .bufferList()
+                .flatMapConcat { permissionsList ->
+                    if (permissions.isEmpty()) {
+                        // Occurs during orientation change, when the subject receives onComplete.
+                        // In that case we don't want to propagate that empty list.
+                        return@flatMapConcat emptyFlow<Boolean>()
+                    }
+                    val allGranted = permissionsList.all { it.granted }
+                    return@flatMapConcat flowOf(allGranted)
                 }
-                val allGranted = permissionsList.all { it.granted }
-                return@flatMapConcat flowOf(allGranted)
-            }
     }
 
     /**
@@ -90,10 +90,10 @@ internal class PermissionsDataFlow(
      */
     private fun <T> Flow<T>.ensureEachCombined(vararg permissions: String): Flow<Permission> {
         return requestPermissions(this, *permissions)
-            .bufferList()
-            .flatMapConcat {
-                if (permissions.isEmpty()) emptyFlow() else flowOf(Permission(it))
-            }
+                .bufferList()
+                .flatMapConcat {
+                    if (permissions.isEmpty()) emptyFlow() else flowOf(Permission(it))
+                }
     }
 
     /**
@@ -102,8 +102,11 @@ internal class PermissionsDataFlow(
     private fun <T> Flow<T>.bufferList(): Flow<List<T>> {
         return flow {
             val list = mutableListOf<T>()
-            toList(list)
-            if (list.isNotEmpty()) emit(list)
+            onCompletion {
+                if (list.isNotEmpty()) emit(list)
+            }.collect {
+                list += it
+            }
         }
     }
 
@@ -118,7 +121,7 @@ internal class PermissionsDataFlow(
 
     @TargetApi(Build.VERSION_CODES.M)
     private fun requestImplementation(vararg permissions: String): Flow<Permission> {
-        val list: MutableList<Flow<Permission>> = mutableListOf()
+        val permissionFlows: MutableList<Flow<Permission>> = mutableListOf()
         val unrequestedPermissions: MutableList<String> = mutableListOf()
 
         // In case of multiple permissions, we create a Flow for each of them.
@@ -129,38 +132,40 @@ internal class PermissionsDataFlow(
                 // Already granted, or not Android M
                 // Return a granted Permission object.
                 val permissionFlow = Permission(
-                    name = permission,
-                    granted = true,
-                    shouldShowRequestPermissionRationale = false
+                        name = permission,
+                        granted = true,
+                        shouldShowRequestPermissionRationale = false
                 ).toFlow()
-                list.add(permissionFlow)
+                permissionFlows.add(permissionFlow)
                 continue
             }
             if (isRevoked(permission)) {
                 // Revoked by a policy, return a denied Permission object.
                 val permissionFlow = Permission(
-                    name = permission,
-                    granted = false,
-                    shouldShowRequestPermissionRationale = false
+                        name = permission,
+                        granted = false,
+                        shouldShowRequestPermissionRationale = false
                 ).toFlow()
-                list.add(permissionFlow)
+                permissionFlows.add(permissionFlow)
                 continue
             }
 
-            val subject: BehaviorSubject<Permission> =
-                permissionsFlowFragment.getSubjectByPermission(permission) ?: BehaviorSubject<Permission>()
-                    .also {
-                        unrequestedPermissions.add(permission)
-                        permissionsFlowFragment.setSubjectForPermission(permission, it)
-                    }
-            list.add(subject)
+            val subject: StateFlow<Permission?> =
+                    permissionsFlowFragment.getSubjectByPermission(permission)
+                            ?: MutableStateFlow<Permission?>(null).also {
+                                unrequestedPermissions.add(permission)
+                                permissionsFlowFragment.setSubjectForPermission(permission, it)
+                            }
+
+            val flow = subject.filterNotNull() // filter initial null value
+            permissionFlows.add(flow)
         }
 
         if (unrequestedPermissions.isNotEmpty()) {
             requestPermissionsFromFragment(unrequestedPermissions.toTypedArray())
         }
 
-        return list.merge()
+        return permissionFlows.merge()
     }
 
     /**
@@ -200,7 +205,7 @@ internal class PermissionsDataFlow(
      * For SDK < 23, the flow will always emit false.
      */
     override fun shouldShowRequestPermissionRationale(
-        activity: Activity, vararg permissions: String
+            activity: Activity, vararg permissions: String
     ): Flow<Boolean> {
         if (isMarshmallow()) {
             return permissions.all {
