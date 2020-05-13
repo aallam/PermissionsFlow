@@ -1,4 +1,9 @@
 <resources>
-    <string name="app_name">Sample</string>
-    <string name="enable_camera">Enable Camera</string>
+    <string name="app_name">PermissionsFlow Sample</string>
+    <string name="request_all">Request All</string>
+    <string name="request_camera">Camera</string>
+    <string name="request_contacts">Contacts</string>
+    <string name="request_audio">Audio</string>
+    <string name="request_granted">Granted</string>
+    <string name="request_denied">Denied</string>
 </resources>

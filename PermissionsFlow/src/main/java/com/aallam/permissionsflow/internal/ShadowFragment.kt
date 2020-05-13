@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 internal const val PERMISSIONS_REQUEST_CODE = 42
-private const val TAG = "PermissionsFlowFragment"
+private const val TAG = "PermissionsFlow"
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class ShadowFragment : Fragment() {
@@ -51,13 +51,12 @@ internal class ShadowFragment : Fragment() {
         shouldShowRequestPermissionRationale: BooleanArray
     ) {
         permissions.forEachIndexed { index, permission ->
-            log("onRequestPermissionsResult: $permission")
+            log("Request permissions result: $permission")
             subjects[permission]?.let { subject ->
                 subjects.remove(permission)
                 val granted = grantResults[index] == PackageManager.PERMISSION_GRANTED
                 subject.value = Permission(permissions[index], granted, shouldShowRequestPermissionRationale[index])
-                //subject.close() TODO close ?
-            } ?: Log.e(TAG, "onRequestPermissionsResult: no corresponding permission request found")
+            } ?: Log.e(TAG, "No corresponding permission request found for $permission")
         }
     }
 

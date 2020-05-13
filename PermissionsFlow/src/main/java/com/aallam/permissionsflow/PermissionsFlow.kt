@@ -55,12 +55,11 @@ interface PermissionsFlow {
      * Logging setup.
      */
     fun logging(logging: Boolean)
+}
 
-    companion object {
-
-        @JvmStatic
-        fun of(activity: FragmentActivity): PermissionsFlow = PermissionsDataFlow(activity.permissionsFlowFragment)
-    }
-
-
+/**
+ * Creates a [PermissionsFlow] with the specified [FragmentActivity].
+ */
+public fun PermissionsFlow(activity: FragmentActivity): PermissionsFlow {
+    return PermissionsDataFlow(activity.permissionsFlowFragment)
 }

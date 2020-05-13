@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#6200EE</color>
-    <color name="colorPrimaryDark">#3700B3</color>
-    <color name="colorAccent">#03DAC5</color>
+    <color name="spaceCadet">#212354</color>
+    <color name="blueberry">#6081FF</color>
+    <color name="electricBlue">#89F3FF</color>
+    <color name="sunglow">#FFCC33</color>
 </resources>
