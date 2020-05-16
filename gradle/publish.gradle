@@ -1,0 +1,45 @@
+apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
+
+task sourcesJar(type: Jar) {
+    archiveClassifier.set("sources")
+    from android.sourceSets.main.java.source
+}
+
+artifacts {
+    archives sourcesJar
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+                groupId = library.groupId
+                artifactId = library.artifactId
+                version = library.version
+            }
+        }
+    }
+}
+
+if (System.hasProperty("BINTRAY_USER") && System.hasProperty("BINTRAY_KEY")) {
+    bintray {
+        user = System.getenv("BINTRAY_USER")
+        key = System.getenv("BINTRAY_KEY")
+        publications = ["release"]
+        publish = true
+        pkg {
+            licenses = ["Apache-2.0"]
+            repo = "maven"
+            name = "permissionsflow"
+            websiteUrl = "https://github.com/aallam/PermissionsFlow"
+            issueTrackerUrl = "https://github.com/aallam/PermissionsFlow/issues"
+            vcsUrl = "https://github.com/aallam/PermissionsFlow.git"
+            version {
+                name = library.version
+                vcsTag = library.version
+            }
+        }
+    }
+}
