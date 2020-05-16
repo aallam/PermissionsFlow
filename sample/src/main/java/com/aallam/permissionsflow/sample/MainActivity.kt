@@ -21,8 +21,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val permissionsFlow = PermissionsFlow(this)
-        permissionsFlow.logging(true)
+        val permissionsFlow = PermissionsFlow(this, logging = true)
 
         if (permissionsFlow.isGranted(CAMERA)) cameraStatus.setGranted()
         if (permissionsFlow.isGranted(READ_CONTACTS)) contactsStatus.setGranted()

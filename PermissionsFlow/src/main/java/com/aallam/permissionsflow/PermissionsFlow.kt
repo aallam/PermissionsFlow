@@ -6,6 +6,9 @@ import com.aallam.permissionsflow.internal.PermissionsDataFlow
 import com.aallam.permissionsflow.internal.PermissionsDataFlow.Companion.permissionsFlowFragment
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * Simple static interface for permissions requests.
+ */
 interface PermissionsFlow {
 
     /**
@@ -60,6 +63,8 @@ interface PermissionsFlow {
 /**
  * Creates a [PermissionsFlow] with the specified [FragmentActivity].
  */
-public fun PermissionsFlow(activity: FragmentActivity): PermissionsFlow {
-    return PermissionsDataFlow(activity.permissionsFlowFragment)
+public fun PermissionsFlow(activity: FragmentActivity, logging: Boolean = false): PermissionsFlow {
+    return PermissionsDataFlow(activity.permissionsFlowFragment).also {
+        it.logging(logging)
+    }
 }
