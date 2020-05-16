@@ -1,6 +1,9 @@
 package com.aallam.permissionsflow
 
-class Permission(
+/**
+ * Permission request result object.
+ */
+class Permission internal constructor(
     val name: String,
     val granted: Boolean,
     val shouldShowRequestPermissionRationale: Boolean = false
