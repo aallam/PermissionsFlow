@@ -1,6 +1,5 @@
 package com.aallam.permissionsflow.sample.extension
 
-import android.os.Looper
 import android.view.View
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -12,7 +11,7 @@ import kotlinx.coroutines.flow.conflate
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal fun View.clicks(): Flow<Unit> {
-    return callbackFlow {
+    return callbackFlow<Unit> {
         val listener = View.OnClickListener {
             safeOffer(Unit)
         }
