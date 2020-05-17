@@ -4,13 +4,13 @@
 
 This library allows the usage of Kotlin Flow with Android runtime permissions system.
 
-## 🔽 Download
+## Download
 
 ```groovy
 implementation 'com.aallam.permissionsflow:permissionsflow:0.1.0'
 ```
 
-## 🛠 Usage
+## Usage
 Create a `PermissionsFlow` instance :
 ```kotlin
 val permissionsFlow = PermissionsFlow(this)
@@ -71,8 +71,8 @@ button.clicks()
 ```
 ℹ️ Please check the sample app for more details.
 
-## 📜 Credit
+## Credit
 This library inspired by [RxPermissions](https://github.com/tbruyelle/RxPermissions)
 
-## 📄 License
+## License
 PermissionsFlow is distributed under the terms of the Apache License (Version 2.0). See [LICENSE](LICENSE) for details.
