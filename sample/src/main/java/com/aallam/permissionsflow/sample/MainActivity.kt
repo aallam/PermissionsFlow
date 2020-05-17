@@ -6,6 +6,8 @@ import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
 import com.aallam.permissionsflow.PermissionsFlow
 import com.aallam.permissionsflow.extension.request
@@ -36,6 +38,10 @@ class MainActivity : AppCompatActivity() {
             .request(permissionsFlow, READ_CONTACTS)
             .onEach { if (it) contactsStatus.setGranted() else contactsStatus.setDenied() }
             .launchIn(lifecycleScope)
+
+        requestContacts.setOnClickListener {
+
+        }
 
         requestContacts.setOnClickListener {
             permissionsFlow.request(READ_CONTACTS)

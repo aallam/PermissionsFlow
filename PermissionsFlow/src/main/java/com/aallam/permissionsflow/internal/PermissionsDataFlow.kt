@@ -4,7 +4,9 @@ import android.annotation.TargetApi
 import android.app.Activity
 import android.os.Build
 import androidx.core.app.ActivityCompat
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentManager
 import com.aallam.permissionsflow.Permission
 import com.aallam.permissionsflow.PermissionsFlow
 import com.aallam.permissionsflow.internal.extension.toFlow
@@ -219,14 +221,22 @@ internal class PermissionsDataFlow(
     }
 
     companion object {
-        internal val FragmentActivity.permissionsFlowFragment: ShadowFragment
-            get() = findPermissionsFlowFragment(this) ?: ShadowFragment().also {
-                supportFragmentManager.beginTransaction().add(it, TAG).commitAllowingStateLoss()
-                supportFragmentManager.executePendingTransactions()
-            }
 
-        private fun findPermissionsFlowFragment(activity: FragmentActivity): ShadowFragment? {
-            return activity.supportFragmentManager.findFragmentByTag(TAG) as? ShadowFragment
+        internal val FragmentActivity.permissionsFlowFragment: ShadowFragment
+            get() = shadowFragment(supportFragmentManager)
+
+        internal val Fragment.permissionsFlowFragment: ShadowFragment
+            get() = shadowFragment(childFragmentManager)
+
+        private fun shadowFragment(fragmentManager: FragmentManager): ShadowFragment {
+            return findPermissionsFlowFragment(fragmentManager) ?: ShadowFragment().also {
+                fragmentManager.beginTransaction().add(it, TAG).commitAllowingStateLoss()
+                fragmentManager.executePendingTransactions()
+            }
+        }
+
+        private fun findPermissionsFlowFragment(fragmentManager: FragmentManager): ShadowFragment? {
+            return fragmentManager.findFragmentByTag(TAG) as? ShadowFragment
         }
     }
 }

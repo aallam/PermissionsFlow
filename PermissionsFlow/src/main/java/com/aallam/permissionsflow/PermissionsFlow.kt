@@ -1,6 +1,7 @@
 package com.aallam.permissionsflow
 
 import android.app.Activity
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.aallam.permissionsflow.internal.PermissionsDataFlow
 import com.aallam.permissionsflow.internal.PermissionsDataFlow.Companion.permissionsFlowFragment
@@ -65,6 +66,12 @@ interface PermissionsFlow {
  */
 public fun PermissionsFlow(activity: FragmentActivity, logging: Boolean = false): PermissionsFlow {
     return PermissionsDataFlow(activity.permissionsFlowFragment).also {
+        it.logging(logging)
+    }
+}
+
+public fun PermissionsFlow(fragment: Fragment, logging: Boolean = false): PermissionsFlow {
+    return PermissionsDataFlow(fragment.permissionsFlowFragment).also {
         it.logging(logging)
     }
 }
