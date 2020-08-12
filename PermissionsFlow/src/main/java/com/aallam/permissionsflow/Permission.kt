@@ -1,18 +1,22 @@
 package com.aallam.permissionsflow
 
+import com.aallam.permissionsflow.internal.combineGranted
+import com.aallam.permissionsflow.internal.combineName
+import com.aallam.permissionsflow.internal.combineShouldShowRequestPermissionRationale
+
 /**
  * Permission request result object.
  */
-class Permission internal constructor(
+public class Permission internal constructor(
     val name: String,
     val granted: Boolean,
     val shouldShowRequestPermissionRationale: Boolean = false
 ) {
 
-    constructor(permissions: List<Permission>) : this(
-        name = combineName(permissions),
-        granted = combineGranted(permissions),
-        shouldShowRequestPermissionRationale = combineShouldShowRequestPermissionRationale(permissions)
+    public constructor(permissions: List<Permission>) : this(
+        name = permissions.combineName(),
+        granted = permissions.combineGranted(),
+        shouldShowRequestPermissionRationale = permissions.combineShouldShowRequestPermissionRationale()
     )
 
     override fun equals(other: Any?): Boolean {
@@ -37,9 +41,3 @@ class Permission internal constructor(
     }
 }
 
-private fun combineName(permissions: List<Permission>): String = permissions.map(Permission::name).joinToString()
-
-private fun combineGranted(permissions: List<Permission>): Boolean = permissions.all(Permission::granted)
-
-private fun combineShouldShowRequestPermissionRationale(permissions: List<Permission>): Boolean =
-    permissions.any(Permission::shouldShowRequestPermissionRationale)

@@ -8,12 +8,12 @@ import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.aallam.permissionsflow.Permission
+import com.aallam.permissionsflow.internal.extension.TAG
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 internal const val PERMISSIONS_REQUEST_CODE = 42
-private const val TAG = "PermissionsFlow"
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class ShadowFragment : Fragment() {

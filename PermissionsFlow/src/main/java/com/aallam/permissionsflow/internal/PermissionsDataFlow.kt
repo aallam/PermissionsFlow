@@ -9,12 +9,13 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import com.aallam.permissionsflow.Permission
 import com.aallam.permissionsflow.PermissionsFlow
+import com.aallam.permissionsflow.internal.extension.TAG
+import com.aallam.permissionsflow.internal.extension.bufferList
 import com.aallam.permissionsflow.internal.extension.toFlow
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 
-private const val TAG = "FlowPermissions"
 private val TRIGGER = Unit
 
 @Suppress("unused")
@@ -95,25 +96,6 @@ internal class PermissionsDataFlow(
             .flatMapConcat {
                 if (permissions.isEmpty()) emptyFlow() else flowOf(Permission(it))
             }
-    }
-
-    /**
-     * Buffer all the results into a [List].
-     */
-    private fun <T> Flow<T>.bufferList(size: Int): Flow<List<T>> {
-        return flow {
-            var list: MutableList<T>? = null
-            collect { value ->
-                if (list == null) list = mutableListOf() // lazily create a new list
-                list!!.let {
-                    it.add(value)
-                    if (it.size == size) {
-                        emit(it)
-                        list = null // prepare next list
-                    }
-                }
-            }
-        }
     }
 
     private fun pending(vararg permissions: String): Flow<*> {

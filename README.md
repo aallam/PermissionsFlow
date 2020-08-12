@@ -1,6 +1,6 @@
 # Permissions Flow 
 
-[![Download](https://api.bintray.com/packages/aallam/maven/permissionsflow/images/download.svg) ](https://bintray.com/aallam/maven/permissionsflow/_latestVersion)
+[![Download](https://api.bintray.com/packages/aallam/maven/com.aallam.permissionsflow%3Apermissionsflow/images/download.svg)](https://bintray.com/aallam/maven/com.aallam.permissionsflow%3Apermissionsflow/_latestVersion)
 
 This library allows the usage of Kotlin Flow with Android runtime permissions system.
 
