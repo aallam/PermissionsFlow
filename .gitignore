@@ -10,5 +10,6 @@ build
 local.properties
 reports
 jacoco.exec
+.gradletasknamecache
 
 .DS_Store

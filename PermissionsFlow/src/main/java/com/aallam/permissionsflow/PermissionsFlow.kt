@@ -46,7 +46,7 @@ public interface PermissionsFlow {
     public fun isRevoked(permission: String): Boolean
 
     /**
-     * Invokes Activity.shouldShowRequestPermissionRationale and wraps the returned value in a [Flow].
+     * Invokes Activity.shouldShowRequestPermissionRationale and wraps the returned value in a flow.
      *
      * In case of multiple permissions, only emits true if Activity.shouldShowRequestPermissionRationale returned true
      * for all revoked permissions.
@@ -64,7 +64,7 @@ public interface PermissionsFlow {
 }
 
 /**
- * Creates a [PermissionsFlow] with the specified [FragmentActivity].
+ * Creates a [PermissionsFlow] with the specified fragment activity.
  */
 public fun PermissionsFlow(activity: FragmentActivity, logging: Boolean = false): PermissionsFlow {
     return PermissionsDataFlow(activity.permissionsFlowFragment).also {
@@ -73,7 +73,7 @@ public fun PermissionsFlow(activity: FragmentActivity, logging: Boolean = false)
 }
 
 /**
- * Creates a [PermissionsFlow] with the specified [Fragment].
+ * Creates a [PermissionsFlow] with the specified fragment.
  */
 public fun PermissionsFlow(fragment: Fragment, logging: Boolean = false): PermissionsFlow {
     return PermissionsDataFlow(fragment.permissionsFlowFragment).also {

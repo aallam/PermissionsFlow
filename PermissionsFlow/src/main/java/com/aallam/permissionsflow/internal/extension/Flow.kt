@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 
-internal const val TAG = "FlowPermissions"
+internal const val TAG = "PermissionsFlow"
 
 /**
  * Equivalent to `flowOf(value)`
