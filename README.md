@@ -1,6 +1,6 @@
 # Permissions Flow 
 
-![Maven Central](https://img.shields.io/maven-central/v/com.aallam.permissionsflow/permissionsflow)
+[![Maven Central](https://img.shields.io/maven-central/v/com.aallam.permissionsflow/permissionsflow?color=blue)](https://search.maven.org/artifact/com.aallam.permissionsflow/permissionsflow)
 
 This library allows the usage of Kotlin Flow with Android runtime permissions system.
 
