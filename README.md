@@ -1,13 +1,15 @@
 # Permissions Flow 
 
-[![Download](https://api.bintray.com/packages/aallam/maven/com.aallam.permissionsflow%3Apermissionsflow/images/download.svg)](https://bintray.com/aallam/maven/com.aallam.permissionsflow%3Apermissionsflow/_latestVersion)
+![Maven Central](https://img.shields.io/maven-central/v/com.aallam.permissionsflow/permissionsflow)
 
 This library allows the usage of Kotlin Flow with Android runtime permissions system.
 
 ## Download
 
+The latest release is available on [Maven Central](https://search.maven.org/artifact/com.aallam.permissionsflow/permissionsflow).
+
 ```groovy
-implementation 'com.aallam.permissionsflow:permissionsflow:0.1.0'
+implementation 'com.aallam.permissionsflow:permissionsflow:0.2.0'
 ```
 
 ## Usage
