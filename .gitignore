@@ -11,5 +11,6 @@ local.properties
 reports
 jacoco.exec
 .gradletasknamecache
+*.hprof
 
 .DS_Store
