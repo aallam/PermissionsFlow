@@ -17,16 +17,14 @@ public class Permission internal constructor(
     val shouldShowRequestPermissionRationale: Boolean = false
 ) {
 
-    /**
-     * @param permissions list of permission to combine.
-     */
+    /** @param permissions list of permission to combine. **/
     public constructor(permissions: List<Permission>) : this(
         name = permissions.combineName(),
         granted = permissions.combineGranted(),
         shouldShowRequestPermissionRationale = permissions.combineShouldShowRequestPermissionRationale()
     )
 
-    /** suppress **/
+    /** @suppress **/
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
