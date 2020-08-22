@@ -9,7 +9,7 @@ This library allows the usage of Kotlin Flow with Android runtime permissions sy
 The latest release is available on [Maven Central](https://search.maven.org/artifact/com.aallam.permissionsflow/permissionsflow).
 
 ```groovy
-implementation 'com.aallam.permissionsflow:permissionsflow:1.0.0'
+implementation 'com.aallam.permissionsflow:permissionsflow:1.0.1'
 ```
 
 ## Usage

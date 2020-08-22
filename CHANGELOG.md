@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.1] - 2020-08-22
+
+## Changed
+- Internal improvements
+
 ## [1.0.0] - 2020-08-17
 
 ## Changed
@@ -20,6 +25,7 @@ Initial release.
 * Request android runtime permissions using: `request` `requestEach` and `requestCombined`
 * Permission status: `isGranted`, `isRevoked` and `shouldShowRequestPermissionRationale`
 
+[1.0.1]: https://github.com/Aallam/PermissionsFlow/releases/tag/1.0.1
 [1.0.0]: https://github.com/Aallam/PermissionsFlow/releases/tag/1.0.0
 [0.2.0]: https://github.com/Aallam/PermissionsFlow/releases/tag/0.2.0
 [0.1.0]: https://github.com/Aallam/PermissionsFlow/releases/tag/0.1.0
