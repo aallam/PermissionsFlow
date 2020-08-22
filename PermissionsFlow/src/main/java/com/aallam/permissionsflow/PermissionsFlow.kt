@@ -65,6 +65,9 @@ public interface PermissionsFlow {
 
 /**
  * Creates a [PermissionsFlow] with the specified fragment activity.
+ *
+ * @param activity Android Activity
+ * @param logging true of logging enabled, otherwise false.
  */
 public fun PermissionsFlow(activity: FragmentActivity, logging: Boolean = false): PermissionsFlow {
     return PermissionsDataFlow(activity.permissionsFlowFragment).also {
@@ -74,6 +77,9 @@ public fun PermissionsFlow(activity: FragmentActivity, logging: Boolean = false)
 
 /**
  * Creates a [PermissionsFlow] with the specified fragment.
+ *
+ * @param fragment Android Fragment
+ * @param logging true of logging enabled, otherwise false.
  */
 public fun PermissionsFlow(fragment: Fragment, logging: Boolean = false): PermissionsFlow {
     return PermissionsDataFlow(fragment.permissionsFlowFragment).also {
