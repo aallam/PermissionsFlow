@@ -45,7 +45,11 @@ public fun Permission(
     shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale
 )
 
-/** @param permissions list of permission to combine. **/
+/**
+ * Permission request result object.
+ *
+ * @param permissions list of permission to combine
+ */
 public fun Permission(permissions: List<Permission>): Permission = PermissionData(
     name = permissions.combineName(),
     granted = permissions.combineGranted(),
