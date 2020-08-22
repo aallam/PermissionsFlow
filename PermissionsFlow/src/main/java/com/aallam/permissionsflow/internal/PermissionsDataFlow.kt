@@ -32,35 +32,7 @@ internal class PermissionsDataFlow(
      * Request permissions immediately, must be invoked during initialization phase of the application.
      */
     override fun request(vararg permissions: String): Flow<Boolean> {
-        return flowOf(TRIGGER).ensure(*permissions)
-    }
-
-    /**
-     * Request permissions immediately, **must be invoked during initialization phase
-     * of your application**.
-     */
-    override fun requestEach(vararg permissions: String): Flow<Permission> {
-        return flowOf(TRIGGER).ensureEach(*permissions)
-    }
-
-    /**
-     * Request permissions immediately, **must be invoked during initialization phase
-     * of your application**.
-     */
-    override fun requestEachCombined(vararg permissions: String): Flow<Permission> {
-        return flowOf(TRIGGER).ensureEachCombined(*permissions)
-    }
-
-    internal fun <T> requestPermissions(trigger: Flow<T>, vararg permissions: String): Flow<Permission> {
-        require(permissions.isNotEmpty()) { "FlowPermissions.request requires at least one input permission" }
-        return merge(trigger, pending(*permissions)).flatMapConcat {
-            requestImplementation(*permissions)
-        }
-    }
-
-
-    private fun <T> Flow<T>.ensure(vararg permissions: String): Flow<Boolean> {
-        return requestPermissions(this, *permissions)
+        return requestPermissions(flowOf(TRIGGER), *permissions)
             .bufferList(permissions.size)
             .flatMapConcat { permissionsList ->
                 if (permissions.isEmpty()) {
@@ -74,28 +46,30 @@ internal class PermissionsDataFlow(
     }
 
     /**
-     * Map emitted items from the source flow into [Permission] objects for each permission in parameters.
-     *
-     * If one or several permissions have never been requested, invoke the related framework method to ask the user
-     * if he allows the permissions.
+     * Request permissions immediately, **must be invoked during initialization phase
+     * of your application**.
      */
-    private fun <T> Flow<T>.ensureEach(vararg permissions: String): Flow<Permission> {
-        return requestPermissions(this, *permissions)
+    override fun requestEach(vararg permissions: String): Flow<Permission> {
+        return requestPermissions(flowOf(TRIGGER), *permissions)
     }
 
     /**
-     * Map emitted items from the source observable into one combined [Permission] object. Only if all permissions are granted,
-     * permission also will be granted. If any permission has `shouldShowRationale` checked, than result also has it checked.
-     *
-     * If one or several permissions have never been requested, invoke the related framework method
-     * to ask the user if he allows the permissions.
+     * Request permissions immediately, **must be invoked during initialization phase
+     * of your application**.
      */
-    private fun <T> Flow<T>.ensureEachCombined(vararg permissions: String): Flow<Permission> {
-        return requestPermissions(this, *permissions)
+    override fun requestEachCombined(vararg permissions: String): Flow<Permission> {
+        return requestPermissions(flowOf(TRIGGER), *permissions)
             .bufferList(permissions.size)
             .flatMapConcat {
                 if (permissions.isEmpty()) emptyFlow() else flowOf(Permission(it))
             }
+    }
+
+    private fun <T> requestPermissions(trigger: Flow<T>, vararg permissions: String): Flow<Permission> {
+        require(permissions.isNotEmpty()) { "FlowPermissions.request requires at least one input permission" }
+        return merge(trigger, pending(*permissions)).flatMapConcat {
+            requestImplementation(*permissions)
+        }
     }
 
     private fun pending(vararg permissions: String): Flow<*> {
